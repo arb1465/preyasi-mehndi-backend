@@ -12,7 +12,7 @@ const app = express();
 const PORT = process.env.PORT || 5001;
 
 app.use(cors({
-    origin: process.env.CORS_ORIGIN, // This should be 'http://localhost:3000' from your .env
+    origin: 'https://preyasi-mehendi.vercel.app', // <-- Your Vercel frontend URL
     credentials: true
 }));
 app.use(express.json({ limit: '16kb' }));
