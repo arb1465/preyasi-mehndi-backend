@@ -161,3 +161,5 @@ const connectDB = async () => {
 };
 
 connectDB();
+
+export default app;
