@@ -6,6 +6,7 @@ import { deleteReview } from "../controllers/deleteReview.controller.js";
 import { addImageToGallery } from "../controllers/addImageToGallery.controller.js";
 import { getAllBookings, deleteBooking } from "../controllers/manageBooking.controller.js";
 import { addDirectToGallery } from "../controllers/addDirectToGallery.controller.js";
+import { getPendingReviewCount, getBookingCount } from "../controllers/dashboard.controller.js";
 
 import authMiddleware from "../middleware/auth.js"
 import { upload } from "../middleware/multer.js";
@@ -39,6 +40,11 @@ router.route("/bookings")
     .get(authMiddleware, getAllBookings);
 router.route("/bookings/delete/:id")
     .delete(authMiddleware, deleteBooking);
+
+router.route("/reviews/pending/count")
+    .get(authMiddleware, getPendingReviewCount);
+router.route("/bookings/count")
+    .get(authMiddleware, getBookingCount);
 
 
 export default router;
