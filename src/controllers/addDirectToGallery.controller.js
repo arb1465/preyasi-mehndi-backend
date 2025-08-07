@@ -2,8 +2,15 @@ import { GalleryImage } from "../models/galleryImage.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
+import fileUpload from "../utils/fileUpload.js"
+import fs from 'fs'
 
 const addDirectToGallery = asyncHandler(async (req, res) => {
+      // --- START OF DEBUGGING LOGS ---
+    console.log("--- Executing addDirectToGallery Controller ---");
+    console.log("1. Received Request Body (text fields):", req.body);
+    console.log("2. Received Request File (from multer):", req.file);
+
     // We get the text fields from the request body
     const { category, altText } = req.body;
     
@@ -16,8 +23,17 @@ const addDirectToGallery = asyncHandler(async (req, res) => {
         throw new ApiError(400, "A category ('hand' or 'feet') is required.");
     }
 
-    // The path to the uploaded image file
-    const imageUrl = req.file.path; 
+    const photoLocalPath = req.file?.path
+
+    console.log("3. Attempting to upload to Cloudinary from path:", photoLocalPath);
+    const cloudinaryResponse = await fileUpload(photoLocalPath);
+
+    if (!cloudinaryResponse || !cloudinaryResponse.url) {
+        throw new ApiError(500, "Error uploading image to Cloudinary.");
+    }
+
+    const imageUrl = cloudinaryResponse.url;
+    fs.unlinkSync(photoLocalPath);
 
     const newGalleryImage = await GalleryImage.create({
         category,
