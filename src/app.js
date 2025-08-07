@@ -14,10 +14,33 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(cors({
-    origin: process.env.CORS_ORIGIN,
-    credentials: true
-}));
+// Get the frontend URL from the environment variables
+const frontendURL = process.env.CORS_ORIGIN;
+
+// Create a whitelist of allowed origins
+const whitelist = [frontendURL];
+if (process.env.NODE_ENV !== 'production') {
+    // If we're not in production, also allow our local dev server
+    whitelist.push('http://localhost:3000');
+}
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } 
+    else {
+      // If it's not, reject the request with an error
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+};
+
+// Use the new, more robust CORS options
+app.use(cors(corsOptions));
+
+
 app.use(express.json({ limit: '16kb' }));
 app.use(express.urlencoded({ extended: true, limit: '16kb' }));
 app.use(express.static(path.join(__dirname, '..', 'public'))); // Correctly points to back/public
