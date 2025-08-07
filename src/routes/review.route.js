@@ -5,11 +5,9 @@ import { getApprovedReviews  } from "../controllers/getApprovedReviews.controlle
 
 const router = Router()
 
-router.route("/submit")
-    .post(
-        upload.single('photo'), 
-        submitReview
-    );
+router.route("/")
+    .post(upload.single('photo'), 
+        submitReview);
 
 router.route("/")
     .get(getApprovedReviews);

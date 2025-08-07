@@ -8,7 +8,6 @@ import reviewRoute from "./routes/review.route.js";
 import bookingRoute from "./routes/booking.route.js";
 import adminRoute from "./routes/admin.route.js";
 import galleryRoute from "./routes/gallery.route.js";
-import forReviewsOnly from "./routes/updateReview.route.js"
 
 const app = express();
 
@@ -25,11 +24,10 @@ app.use(express.static(path.join(__dirname, '..', 'public'))); // Correctly poin
 app.use(cookieParser());
 
 
-app.use('/add-review', reviewRoute);
+app.use('/reviews', reviewRoute);
 app.use('/booking', bookingRoute);
 app.use('/admin-ak47', adminRoute);
 app.use('/gallery', galleryRoute);
-app.use('/', forReviewsOnly)
 
 
 app.get('/', (req, res) => {
