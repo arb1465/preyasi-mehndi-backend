@@ -21,7 +21,7 @@ router.use(authMiddleware);
 router.route('/manage-reviews/pending')
     .get(pendingReview);
 
-router.route('/manage-reviews/:id/approve')
+router.route('/manage-reviews/approve/:id')
     .patch(approveAndUpdateReview);
 
 router.route('/manage-reviews/:id')

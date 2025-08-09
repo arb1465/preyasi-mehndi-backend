@@ -1,5 +1,6 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Review } from "../models/addReview.js"
+import { GalleryImage } from "../models/galleryImage.js";
 
 const approveAndUpdateReview = asyncHandler( async (req, res) => {
     try {
@@ -13,16 +14,15 @@ const approveAndUpdateReview = asyncHandler( async (req, res) => {
         }
 
         // --- Logic to Add to Gallery ---
-        // Check if the admin wants to add it AND if a photo actually exists
-        if (addToGallery && review.photoUrl) {
-            // Check if this image already exists in the gallery to avoid duplicates
-            const imageExists = await GalleryImage.findOne({ imageUrl: review.photoUrl });
+        if (addToGallery && review.photo) {
+            
+            const imageExists = await GalleryImage.findOne({ imageUrl: review.imageUrl });
 
             if (!imageExists) {
                 const newGalleryImage = new GalleryImage({
-                    imageUrl: review.photoUrl,
-                    category: category, // This comes from the admin's prompt
-                    altText: altText
+                    imageUrl: review.imageUrl,
+                    category: category || 'all',
+                    altText: altText || `Review photo from ${review.firstName}`
                 });
                 await newGalleryImage.save();
             }
@@ -34,7 +34,8 @@ const approveAndUpdateReview = asyncHandler( async (req, res) => {
 
         res.json({ message: 'Review approved successfully.' });
 
-    } catch (error) {
+    } 
+    catch (error) {
         console.error("Error approving review:", error);
         res.status(500).json({ error: 'Server error approving review.' });
     }
