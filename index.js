@@ -1,26 +1,26 @@
 import dotenv from 'dotenv';
-dotenv.config({
-    path: './.env' // Explicitly tell dotenv where to find the .env file
-});
+dotenv.config({ path: './.env' });
+
 import connectDB from './src/db.js';
 import { app } from './src/app.js';
 
 const PORT = process.env.PORT || 5001;
 
-// --- Connect to DB, then start the server ---
-connectDB()
-.then(() => {
-    // This is a good place for an error handler for the app itself
-    app.on("error", (error) => {
-        console.error("Express app error:", error);
-        throw error;
-    });
+// Local development: start Express normally
+if (process.env.NODE_ENV !== 'production') {
+    connectDB()
+        .then(() => {
+            app.listen(PORT, () => {
+                console.log(`🚀 Server running at http://localhost:${PORT}`);
+            });
+        })
+        .catch((err) => {
+            console.error("Mongo DB connection failed!", err);
+        });
+}
 
-    // Start listening for requests
-    app.listen(PORT, () => {
-        console.log(`🚀 Server is running on http://localhost:${PORT}`);
-    });
-})
-.catch((err) => {
-    console.error("Mongo DB connection failed! Server will not start.", err);
-});
+// Vercel: export serverless handler
+export default async function handler(req, res) {
+    await connectDB();
+    return app(req, res);
+}
