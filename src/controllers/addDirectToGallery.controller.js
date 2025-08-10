@@ -2,52 +2,38 @@ import { GalleryImage } from "../models/galleryImage.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
-import fileUpload from "../utils/fileUpload.js"
-import fs from 'fs'
+import fileUpload from "../utils/fileUpload.js";
 
 const addDirectToGallery = asyncHandler(async (req, res) => {
-      // --- START OF DEBUGGING LOGS ---
-    console.log("--- Executing addDirectToGallery Controller ---");
-    console.log("1. Received Request Body (text fields):", req.body);
-    console.log("2. Received Request File (from multer):", req.file);
+  console.log("--- addDirectToGallery Controller ---");
+  console.log("Request Body:", req.body);
+  console.log("Uploaded File:", req.file);
 
-    // We get the text fields from the request body
-    const { category, altText } = req.body;
-    
-    // We check that a file was actually uploaded by multer
-    if (!req.file) {
-        throw new ApiError(400, "An image file is required.");
-    }
-    
-    if (!category) {
-        throw new ApiError(400, "A category ('hand' or 'feet') is required.");
-    }
+  const { category, altText } = req.body;
 
-    const photoLocalPath = req.file?.path
+  if (!req.file) {
+    throw new ApiError(400, "An image file is required.");
+  }
 
-    console.log("3. Attempting to upload to Cloudinary from path:", photoLocalPath);
-    const cloudinaryResponse = await fileUpload(photoLocalPath);
+  if (!category) {
+    throw new ApiError(400, "A category ('hand' or 'feet') is required.");
+  }
 
-    if (!cloudinaryResponse || !cloudinaryResponse.url) {
-        throw new ApiError(500, "Error uploading image to Cloudinary.");
-    }
+  const cloudinaryResponse = await fileUpload(req.file.buffer);
 
-    const imageUrl = cloudinaryResponse.url;
-    fs.unlinkSync(photoLocalPath);
+  if (!cloudinaryResponse?.secure_url) {
+    throw new ApiError(500, "Error uploading image to Cloudinary.");
+  }
 
-    const newGalleryImage = await GalleryImage.create({
-        category,
-        altText,
-        imageUrl // Now this will be the correct, full URL
-    });
+  const newGalleryImage = await GalleryImage.create({
+    category,
+    altText,
+    imageUrl: cloudinaryResponse.secure_url
+  });
 
-    if (!newGalleryImage) {
-        throw new ApiError(500, "Failed to save the image to the gallery.");
-    }
-
-    return res.status(201).json(
-        new ApiResponse(201, newGalleryImage, "Image uploaded to gallery successfully!")
-    );
+  return res
+    .status(201)
+    .json(new ApiResponse(201, newGalleryImage, "Image uploaded to gallery successfully!"));
 });
 
 export { addDirectToGallery };

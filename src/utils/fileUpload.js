@@ -1,8 +1,7 @@
-import { v2 as cloudinary } from 'cloudinary';
-import fs from 'fs';
-import dotenv from 'dotenv';
+import { v2 as cloudinary } from "cloudinary";
+import dotenv from "dotenv";
 
-dotenv.config({ path: './.env' });
+dotenv.config({ path: "./.env" });
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -10,21 +9,24 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-const fileUpload = async (localFilePath) => {
-    try {
-        if (!localFilePath) return null;
+const fileUpload = (fileBuffer) => {
+  return new Promise((resolve, reject) => {
+    if (!fileBuffer) return resolve(null);
 
-        const response = await cloudinary.uploader.upload(localFilePath, {
-            resource_type: "image"
-        });
-        console.log('File is uploaded successfully')
-        
-        return response;
-    } 
-    catch (error) {
-        fs.unlinkSync(localFilePath); //removes locally saved path
-        return null;
-    }
-}
+    const stream = cloudinary.uploader.upload_stream(
+      { resource_type: "image" },
+      (error, result) => {
+        if (error) {
+          console.error("Cloudinary upload failed:", error);
+          return reject(error);
+        }
+        console.log("File uploaded successfully:", result.secure_url);
+        resolve(result);
+      }
+    );
 
-export default fileUpload ;
+    stream.end(fileBuffer);
+  });
+};
+
+export default fileUpload;
