@@ -14,30 +14,19 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Get the frontend URL from the environment variables
-const frontendURL = process.env.CORS_ORIGIN;
-
-// Create a whitelist of allowed origins
-const whitelist = [frontendURL];
-if (process.env.NODE_ENV !== 'production') {
-    // If we're not in production, also allow our local dev server
-    whitelist.push('http://localhost:3000');
-}
+const whitelist = process.env.CORS_ORIGIN.split(',').map(o => o.trim());
 
 const corsOptions = {
   origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1 || !origin) {
+    if (whitelist.includes(origin) || !origin) {
       callback(null, true);
-    } 
-    else {
-      // If it's not, reject the request with an error
+    } else {
       callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true
 };
 
-// Use the new, more robust CORS options
 app.use(cors(corsOptions));
 
 
