@@ -16,7 +16,8 @@ const addImageToGallery = asyncHandler(async (req, res) => {
     const newGalleryImage = await GalleryImage.create({
         imageUrl,
         category,
-        altText // This can be optional if you have a default in your model
+        altText, // This can be optional if you have a default in your model
+        isOnGallery: true
     });
 
     if (!newGalleryImage) {

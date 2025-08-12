@@ -7,6 +7,7 @@ import { addImageToGallery } from "../controllers/addImageToGallery.controller.j
 import { getAllBookings, deleteBooking } from "../controllers/manageBooking.controller.js";
 import { addDirectToGallery } from "../controllers/addDirectToGallery.controller.js";
 import { getPendingReviewCount, getBookingCount } from "../controllers/dashboard.controller.js";
+import { getAllImages , toggleGalleryStatus} from "../controllers/manageGallery.controller.js"
 
 import authMiddleware from "../middleware/auth.js"
 import { upload } from "../middleware/multer.js";
@@ -45,6 +46,11 @@ router.route("/reviews/pending/count")
     .get(authMiddleware, getPendingReviewCount);
 router.route("/bookings/count")
     .get(authMiddleware, getBookingCount);
+
+router.route("/gallery/all")
+    .get(authMiddleware, getAllImages);
+router.route("/gallery/toggle/:id")
+    .patch(authMiddleware, toggleGalleryStatus);
 
 
 export default router;

@@ -18,7 +18,12 @@ const galleryImageSchema = new mongoose.Schema(
         altText: {
             type: String,
             default: 'Preyasi Mehendi Design' 
-        }
+        },
+        
+        isOnGallery: {
+            type: Boolean,
+            default: false
+        },
     },
     {
         timestamps: true 

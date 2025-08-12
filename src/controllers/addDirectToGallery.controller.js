@@ -28,7 +28,8 @@ const addDirectToGallery = asyncHandler(async (req, res) => {
   const newGalleryImage = await GalleryImage.create({
     category,
     altText,
-    imageUrl: cloudinaryResponse.secure_url
+    imageUrl: cloudinaryResponse.secure_url,
+    isOnGallery: true
   });
 
   return res
