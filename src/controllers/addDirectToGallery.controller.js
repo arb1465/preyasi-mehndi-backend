@@ -16,7 +16,7 @@ const addDirectToGallery = asyncHandler(async (req, res) => {
   }
 
   if (!category) {
-    throw new ApiError(400, "A category ('hand' or 'feet') is required.");
+    throw new ApiError(400, "A category is required.");
   }
 
   const cloudinaryResponse = await fileUpload(req.file.buffer);

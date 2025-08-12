@@ -7,7 +7,7 @@ const galleryImageSchema = new mongoose.Schema(
             required: true,
             // 'enum' is a validator that ensures the category can ONLY be one of these two values.
             // This prevents data entry errors.
-            enum: ['all','hand', 'feet'] 
+            enum: ['all','bridal', 'engagement','simple','stylish'] 
         },
 
         imageUrl: {
