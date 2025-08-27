@@ -7,7 +7,8 @@ import { addImageToGallery } from "../controllers/addImageToGallery.controller.j
 import { getAllBookings, deleteBooking } from "../controllers/manageBooking.controller.js";
 import { addDirectToGallery } from "../controllers/addDirectToGallery.controller.js";
 import { getPendingReviewCount, getBookingCount } from "../controllers/dashboard.controller.js";
-import { getAllImages , toggleGalleryStatus} from "../controllers/manageGallery.controller.js"
+import { getAllImages , toggleGalleryStatus} from "../controllers/manageGallery.controller.js";
+import { generateMehendiImage } from "../controllers/ai.controller.js";
 
 import authMiddleware from "../middleware/auth.js"
 import { upload } from "../middleware/multer.js";
@@ -27,6 +28,8 @@ router.route('/manage-reviews/approve/:id')
 
 router.route('/manage-reviews/:id')
     .delete(deleteReview);
+router.route("/ai-designer/generate")
+    .post(authMiddleware, generateMehendiImage);
 
 router.route("/gallery/add")
     .post(authMiddleware, addImageToGallery);
