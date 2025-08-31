@@ -7,12 +7,9 @@ import { ApiError } from '../utils/ApiError.js';
 
 const HUGGINGFACE_API_TOKEN = process.env.HUGGINGFACE_API_TOKEN;
 
-// --- SWITCHING TO A MORE STANDARD, RELIABLE MODEL ---
-// This is a popular Stable Diffusion model that is well-supported.
 const API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0";
 
 const generateMehendiImage = asyncHandler(async (req, res) => {
-    // A high-quality prompt, now with negative prompts for better results
     const prompt = "A beautiful intricate black and white mehendi mandala, clean white background, detailed linework, high resolution, 4k, professional henna artwork";
     const negative_prompt = "low quality, deformed, disfigured, text";
 

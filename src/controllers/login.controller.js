@@ -10,7 +10,7 @@ const loginAdmin  = asyncHandler ( (req, res) => {
     const isAdminPass = password === process.env.ADMIN_PASSWORD;
 
     if (isAdminUser && isAdminPass) {
-        console.log('Admin login successful.');
+        console.log(`\nAdmin: ${username} login successful.`);
 
         const payload = {
             user: {
