@@ -11,8 +11,6 @@ const addReviewSchema  = new mongoose.Schema({
     },
     email: {
         type: String,
-        unique: true,
-        index: true
     },
     phone: {
         type: Number,
