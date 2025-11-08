@@ -7,7 +7,7 @@ import { ApiError } from '../utils/ApiError.js';
 
 const HUGGINGFACE_API_TOKEN = process.env.HUGGINGFACE_API_TOKEN;
 
-const API_URL = "https://router.huggingface.co/stabilityai/stable-diffusion-xl-base-1.0";
+const API_URL = "https://api-inference.huggingface.co/models/prompthero/openjourney";
 
 const generateMehendiImage = asyncHandler(async (req, res) => {
   const prompt =
