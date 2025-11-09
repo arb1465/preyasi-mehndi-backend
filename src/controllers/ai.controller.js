@@ -1,26 +1,29 @@
 // back/src/controllers/ai.controller.js
-
-import axios from 'axios';
-import { asyncHandler } from '../utils/asyncHandler.js';
-import { ApiResponse } from '../utils/ApiResponse.js';
-import { ApiError } from '../utils/ApiError.js';
+import axios from "axios";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
+import { ApiError } from "../utils/ApiError.js";
 
 const HUGGINGFACE_API_TOKEN = process.env.HUGGINGFACE_API_TOKEN;
 
-const API_URL = "https://api-inference.huggingface.co/models/prompthero/openjourney";
+// ✅ new router endpoint
+const API_URL = "https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-xl-base-1.0";
 
-const generateMehendiImage = asyncHandler(async (req, res) => {
-  const prompt =
-    "A beautiful intricate black and white mehendi mandala, clean white background, detailed linework, high resolution, 4k, professional henna artwork";
-  const negative_prompt = "low quality, deformed, disfigured, text";
+export const generateMehendiImage = asyncHandler(async (req, res) => {
+  const { prompt } = req.body;
 
-  console.log("Starting AI image generation with Hugging Face...");
+  const positivePrompt =
+    prompt ||
+    "A detailed black and white mehendi mandala, clean white background, intricate linework, symmetrical henna pattern, 4K high resolution, elegant artistic design";
+  const negative_prompt = "blurry, text, deformed, disfigured, low quality";
 
   try {
+    console.log("🔄 Generating image via Hugging Face Router...");
+
     const response = await axios.post(
       API_URL,
       {
-        inputs: prompt,
+        inputs: positivePrompt,
         parameters: { negative_prompt },
       },
       {
@@ -37,37 +40,16 @@ const generateMehendiImage = asyncHandler(async (req, res) => {
     const base64Image = imageBuffer.toString("base64");
     const imageUrl = `data:image/jpeg;base64,${base64Image}`;
 
-    console.log("✅ AI image generated successfully!");
-
-    return res
+    console.log("✅ Image generated successfully!");
+    res
       .status(200)
       .json(new ApiResponse(200, { imageUrl }, "Image generated successfully."));
   } catch (error) {
-    if (error.response && error.response.data) {
-      const errorString = Buffer.from(error.response.data).toString();
-
-      try {
-        const errorData = JSON.parse(errorString);
-        if (errorData.error && errorData.error.includes("is currently loading")) {
-          throw new ApiError(
-            503,
-            `AI model is starting up. Please try again in about ${
-              errorData.estimated_time || 20
-            } seconds.`
-          );
-        }
-        throw new ApiError(500, errorData.error || "An unknown error occurred.");
-      } catch (jsonParseError) {
-        throw new ApiError(
-          error.response.status || 500,
-          `AI service responded with an error: ${errorString}`
-        );
-      }
+    console.error("❌ Hugging Face API Error:", error.message);
+    if (error.response) {
+      const errText = Buffer.from(error.response.data).toString();
+      throw new ApiError(error.response.status, errText);
     }
-
-    console.error("Hugging Face API Error:", error.message);
-    throw new ApiError(500, "Could not connect to the AI service.");
+    throw new ApiError(500, "Failed to connect to AI service.");
   }
 });
-
-export { generateMehendiImage };
